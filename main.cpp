@@ -30,15 +30,74 @@ void startLocalGame() {
     }
 }
 
+void startOnlineGame() {
+
+
+    //listen for messages
+
+    //send message
+
+
+
+    std::string q = "";
+    while (q != "q") {
+        std::cout << "Enter message: ";
+        // std::cin >> q;
+        std::getline(std::cin, q);
+        if (q != "q") {
+            addMessageToQueue(q);
+        }
+    }
+
+    // GameBoard board;
+    // //0 = white to play, 1 = black to play
+    // bool local_color = 0;
+    // bool to_play = 0;
+    // int turn = 1;
+    
+    // std::string q = "";
+    // while(q != "q") {
+    //     std::cout << "\n\n\n";
+    //     if(local_color) {
+    //         board.printBoardWhite(to_play, turn);
+    //     } else {
+    //         board.printBoardBlack(to_play, turn);
+    //     }
+    //     std::cout << "\n\n";
+    //     std::cout << "   Enter move: ";
+    //     std::cout.flush();
+    //     std::getline(std::cin,  q);
+    //     if (q != "q") {
+    //         if (board.movePiece(q, to_play)) {
+    //             if(to_play) {turn++;}
+    //             to_play = !to_play;
+    //         };
+    //     }
+    //     system("clear");
+    // }
+}
+
+
+void joinOnlineGame() {
+
+    std::string q = "";
+    while (q != "q") {
+        std::cout << "Enter message: ";
+        std::getline(std::cin, q);
+        addMessageToQueue(q);
+    }
+}
+
 
 int main(int argc, char** argv) {
+    std::string tmpIP; 
+    unsigned short tmpPort;
     int selected = 0;
     std::vector<std::string> options = {"Host Game", "Join Game", "Local", "Quit"};
-
     setRawMode(true);
 
     while (true) {
-        system("clear");
+        // system("clear");
         displayMenu(options, selected);
 
         KeyPress key = getKeyPress();
@@ -50,12 +109,24 @@ int main(int argc, char** argv) {
             if (options[selected] == "Quit") {
                 break;
             } else if (options[selected] == "Host Game") {
-                int port = setPort();
-                startServer(port);
+                setRawMode(false);
+                // int port = getPortHost();
+                
+
+                getLocalIpAndPort(tmpIP, tmpPort);
+                std::thread serverThread(startServer, tmpPort);
+                serverThread.detach();
+                // startOnlineGame();
+
             } else if (options[selected] == "Join Game") {
-                int ip = getIP();
+                setRawMode(false);
+                std::string ip = getIpClient();
+                unsigned short port = getPortClient(); 
+                std::thread clientThread(startClient, std::ref(ip), port);
+                clientThread.detach();
+                // joinOnlineGame();
             } else if (options[selected] == "Local") {
-                system("clear");
+                // system("clear");
                 setRawMode(false);
                 startLocalGame();
             }

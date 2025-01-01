@@ -6,6 +6,7 @@
 #include "network.h"
 
 void startLocalGame();
+void startOnlineGame();
 void startHost();
 void startJoin();
 
